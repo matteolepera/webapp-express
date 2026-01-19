@@ -5,6 +5,8 @@ import handledError from "./middlewares/handledError.js";
 const app = express();
 const port = process.env.SERVER_PORT;
 
+app.use(express.static("public"));
+
 app.use("/api/movies", moviesRouters)
 app.use(handledError)
 
