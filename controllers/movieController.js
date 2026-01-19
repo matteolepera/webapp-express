@@ -20,9 +20,15 @@ function show(req, res, next) {
     connection.query(query, [id], (err, result) => {
         if (err) next(err)
 
-        res.json({
-            movie: result
-        })
+        if (result.length === 0) {
+            res.status(404)
+            return res.json({
+                error: "Not Foud",
+                message: "Errore del server",
+            })
+        }
+        const movie = result[0];
+        res.json(movie)
     })
 
 }
