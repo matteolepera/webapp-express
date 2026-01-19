@@ -12,8 +12,19 @@ function index(req, res, next) {
     })
 }
 
-function show(req, res) {
-    console.log("show")
+function show(req, res, next) {
+    const id = req.params.id
+    const query = `SELECT * FROM movies
+    WHERE id = ?`
+
+    connection.query(query, [id], (err, result) => {
+        if (err) next(err)
+
+        res.json({
+            movie: result
+        })
+    })
+
 }
 
 const controller = {
