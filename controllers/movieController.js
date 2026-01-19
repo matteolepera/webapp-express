@@ -17,19 +17,28 @@ function show(req, res, next) {
     const query = `SELECT * FROM movies
     WHERE id = ?`
 
-    connection.query(query, [id], (err, result) => {
+    connection.query(query, [id], (err, movieResult) => {
         if (err) next(err)
 
-        if (result.length === 0) {
+        if (movieResult.length === 0) {
             res.status(404)
             return res.json({
                 error: "Not Foud",
                 message: "Errore del server",
             })
         }
-        const movie = result[0];
-        res.json(movie)
+        const reviewQuery = `SELECT * FROM reviews
+        WHERE movie_id = ?`
+        connection.query(reviewQuery, [id], (err, reviewResult) => {
+            if (err) next(err)
+            const movie = {
+                ...movieResult[0],
+                reviews: reviewResult,
+            };
+            res.json(movie)
+        })
     })
+
 
 }
 
