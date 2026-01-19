@@ -1,7 +1,13 @@
 import connection from "../data/db.js";
 
 function index(req, res) {
-    console.log("index")
+    const query = "SELECT * FROM movies"
+    connection.query(query, (err, result) => {
+        res.json({
+            totalMovies: result.length,
+            movies: result,
+        })
+    })
 }
 
 function show(req, res) {
