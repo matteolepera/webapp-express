@@ -1,7 +1,11 @@
 import connection from "../data/db.js";
 
 function index(req, res, next) {
-    const query = "SELECT * FROM movies"
+    const query = `
+    SELECT movies.*, CAST(AVG(reviews.vote) AS FLOAT) AS avg_vote FROM movies
+    LEFT JOIN reviews
+    ON movie_id = movies.id
+    GROUP BY movies.id`
     connection.query(query, (err, result) => {
         if (err) next(err)
 
@@ -42,9 +46,31 @@ function show(req, res, next) {
 
 }
 
+function storeReview(req, res, next) {
+    const data = req.body
+    const movieId = req.params.id
+
+    const sql = "INSERT INTO reviews (movie_id, name, vote, text ) VALUES (?, ?, ?, ?);"
+
+    connection.query(sql, [movieId, data.name, data.vote, data.text], (err, result) => {
+        if (err) next(err);
+
+        console.log(result);
+
+
+        res.status(201).json({
+            message: "recensione inviata correttamente"
+        })
+
+    })
+
+
+}
+
 const controller = {
     index,
     show,
+    storeReview,
 }
 
 export default controller;

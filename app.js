@@ -2,16 +2,25 @@ import express from "express";
 import moviesRouters from "./routers/movies.js"
 import handledError from "./middlewares/handledError.js";
 import notFoud from "./middlewares/notFound.js"
+import cors from "cors"
+
 
 const app = express();
 const port = process.env.SERVER_PORT;
 
-app.use(express.static("public"));
+app.use(
+    cors({
+        origin: "http://localhost:5173"
+    }),
+);
 
-app.use("/api/movies", moviesRouters)
-app.use(notFoud)
-app.use(handledError)
+app.use(express.static("public"));
+app.use(express.json());
+
+app.use("/api/movies", moviesRouters);
+app.use(notFoud);
+app.use(handledError);
 
 app.listen(port, () => {
     console.log(`Il server è in ascolto sulla porta ${port} :)`)
-})
+});
