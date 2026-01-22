@@ -50,19 +50,42 @@ function storeReview(req, res, next) {
     const data = req.body
     const movieId = req.params.id
 
-    const sql = "INSERT INTO reviews (movie_id, name, vote, text ) VALUES (?, ?, ?, ?);"
+    const query = "SELECT * FROM movies WHERE id = ?"
+    connection.query(query, [movieId], (err, result) => {
+        if (err) return next(err)
+        if (result.length === 0) {
+            res.status(404)
+            return res.json({
+                error: "Not Foud",
+                message: "Errore del server",
+            })
+        }
 
-    connection.query(sql, [movieId, data.name, data.vote, data.text], (err, result) => {
-        if (err) next(err);
+        if (!data.name || !data.vote || !data.vote > 5 || !data.vote < 1) {
+            res.status(400)
+            return res.json({
+                error: "Bad Request",
+                message: "Il nome e/o il voto non sono validi.",
+            })
+        }
 
-        console.log(result);
+        const sql = "INSERT INTO reviews (movie_id, name, vote, text ) VALUES (?, ?, ?, ?);"
+
+        connection.query(sql, [movieId, data.name, data.vote, data.text], (err, sqlResult) => {
+            if (err) next(err);
+
+            console.log(sqlResult);
 
 
-        res.status(201).json({
-            message: "recensione inviata correttamente"
+            res.status(201).json({
+                message: "recensione inviata correttamente",
+            })
+
         })
 
+
     })
+
 
 
 }
